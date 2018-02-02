@@ -1,0 +1,17 @@
+*.ipr
+*.iws
+/*.iml
+
+/.classpath
+/.gradle/
+/.idea/
+/.project
+/.settings/
+
+/bin/
+/build/
+/classes/
+/logs
+/out/
+/src/main/java/META-INF
+/target/
