@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"sync"
 
 	"./adapter"
@@ -19,7 +20,7 @@ func main() {
 
 	mrc := session.DB("mrm").C("mergerequests")
 
-	gitLabAdapter := adapter.NewGitLabAdapter("By3ySyMr-9S5yD3zDYsu", session)
+	gitLabAdapter := adapter.NewGitLabAdapter(os.Getenv("GITLAB_API_KEY"), session)
 
 	var wg sync.WaitGroup
 	for _, projId := range proj_ids {
