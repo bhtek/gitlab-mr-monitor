@@ -39,7 +39,6 @@ type GitLabProj struct {
 }
 
 type GitLabMergeRequest struct {
-	_Id          string
 	Id           uint32
 	Iid          uint32
 	ProjectId    uint32    `json:"project_id"`
@@ -189,10 +188,10 @@ func (gla GitLabAdapter) LoadMergeRequests(projectId int, mrc *mgo.Collection, w
 		query.Add("created_after", lastCreatedAt.String())
 	}
 
-	var pageNumber int = 1
+	var pageNumber = 1
 	var totalMods int
 	for {
-		mods, has_more, err := gla.loadMergeRequestPage(pageNumber, url, &query, mrc)
+		mods, hasMore, err := gla.loadMergeRequestPage(pageNumber, url, &query, mrc)
 		if err != nil {
 			log.Fatal(err)
 			return
@@ -200,7 +199,7 @@ func (gla GitLabAdapter) LoadMergeRequests(projectId int, mrc *mgo.Collection, w
 
 		totalMods += mods
 
-		if !has_more {
+		if !hasMore {
 			break
 		}
 
@@ -234,17 +233,17 @@ func (gla GitLabAdapter) loadMergeRequestPage(pageNumber int, url *url2.URL, que
 	var mergeRequests []GitLabMergeRequest
 	err = json.Unmarshal(response, &mergeRequests)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Failed to unmarshal for url=%d: %s\n", url, err))
+		log.Fatal(fmt.Sprintf("Failed to unmarshal for url=%s, err=%s\n", url, err))
 		return 0, false, err
 	}
 
-	var mods int = 0
+	var mods = 0
 
 	for _, mergeRequest := range mergeRequests {
 		var mrdb GitLabMergeRequest
 		err := mrc.Find(bson.M{"id": mergeRequest.Id}).One(&mrdb)
 		if err != nil {
-			if (mergeRequest.State != "opened") {
+			if mergeRequest.State != "opened" {
 				err = gla.enrichMergeRequest(&mergeRequest)
 				if err != nil {
 					return 0, false, err
